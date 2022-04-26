@@ -22,6 +22,16 @@ tar_target(nir_masterfile,
            here("data", "nir_masterfile_plantrows.csv"), 
            format = "file"),
 
+# The single plants masterfile
+tar_target(sp_masterfile, 
+           here("data", "nir_masterfile_2021.csv"), 
+           format = "file"),
+
+# The single plants nir data
+tar_target(sp_nir, 
+           list.files(here("data", "nir", "single_plants"), full.names = TRUE), 
+           format = "file"),
+
 # Read in the agronomic data file and clean up the column names a bit
 tar_target(ag_data, 
            read_and_clean(ag_file)), 
@@ -29,6 +39,15 @@ tar_target(ag_data,
 # Read in and clean the nir data
 tar_target(nir_data, 
            snfR::clean_nir_files(files = nir_files, nir_masterfile = nir_masterfile)),
+
+# Clean up the single plant nir data
+tar_target(sp_nir_data, 
+           snfR::clean_nir_files(files = sp_nir, nir_masterfile = sp_masterfile)),
+
+# Clean up and export the single plant data 
+tar_target(export_sp, 
+           export_sp_data(sp_nir_data), 
+           format = "file"),
 
 # Merge the agronomic data with the yield data
 tar_target(merged_data, 
